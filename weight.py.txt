@@ -1,0 +1,82 @@
+import time
+import serial
+import cv2
+import tkinter as tk
+from PIL import Image, ImageTk
+
+# ========== SERIAL PORT SETUP ==========
+# Replace '/dev/ttyUSB0' with your actual port (e.g. 'COM3' on Windows)
+# Adjust baud rate to match your microcontroller or weighing device
+ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
+time.sleep(2)  # wait for connection to stabilize
+
+# ========== TKINTER FULLSCREEN SETUP ==========
+root = tk.Tk()
+root.attributes('-fullscreen', True)
+root.bind('<Escape>', lambda e: root.destroy())
+
+# Get screen resolution
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+
+# Load and resize background image
+image = cv2.imread('imageJ.jpg')
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+h, w = image.shape[:2]
+scale = min(screen_width / w, screen_height / h)
+new_w, new_h = int(w * scale), int(h * scale)
+resized_image = cv2.resize(image_rgb, (new_w, new_h), interpolation=cv2.INTER_AREA)
+base_img = Image.fromarray(resized_image)
+
+# Label for displaying image
+label = tk.Label(root)
+label.pack(fill='both', expand=True)
+
+# ========== TEXT POSITIONS ==========
+pos1 = (int(new_w * 0.23), int(new_h * 0.415))  # first line
+pos2 = (int(new_w * 0.23), int(new_h * 0.63))   # second line
+
+font = cv2.FONT_HERSHEY_SIMPLEX
+font_scale = 2
+color = (255, 255, 255)
+thickness = 3
+
+# ========== FUNCTION TO READ FROM SERIAL ==========
+def read_weight_from_serial():
+    """Reads numeric value (grams) from COM port"""
+    try:
+        line = ser.readline().decode('utf-8').strip()
+        if line:
+            # Try to parse number
+            return float(line)
+        else:
+            return None
+    except Exception:
+        return None
+
+# ========== DISPLAY LOOP ==========
+def update_display():
+    weight_g = read_weight_from_serial()
+    if weight_g is not None:
+        weight_kg = weight_g / 1000.0  # Convert to KG
+    else:
+        weight_kg = 0.0
+
+    frame = resized_image.copy()
+
+    # Overlay text
+    cv2.putText(frame, f"{weight_kg:.2f} Kg", pos1, font, font_scale, color, thickness, cv2.LINE_AA)
+    cv2.putText(frame, f"{weight_kg * 2.5:.2f} Kg", pos2, font, font_scale, color, thickness, cv2.LINE_AA)
+
+    img_tk = ImageTk.PhotoImage(Image.fromarray(frame))
+    label.config(image=img_tk)
+    label.image = img_tk
+
+    root.after(300, update_display)  # refresh every 0.3 sec
+
+# Start display loop
+update_display()
+root.mainloop()
+
+# Close serial port on exit
+ser.close()
