@@ -34,3 +34,6 @@ sudo reboot
 6. To check logs:
 
 journalctl -u weightdisplay.service -f
+
+Note: to get rid of the password warining -  sudo rm /etc/profile.d/sshpwd.sh
+
