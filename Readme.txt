@@ -1,4 +1,8 @@
 got to home directory and clone the repo
+install libs
+sudo apt-get install python3-pil python3-pil.imagetk
+
+
 
 1. Create a service file
 sudo nano /etc/systemd/system/weightdisplay.service
@@ -36,4 +40,5 @@ sudo reboot
 journalctl -u weightdisplay.service -f
 
 Note: to get rid of the password warining -  sudo rm /etc/profile.d/sshpwd.sh
+
 
