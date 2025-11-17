@@ -2,6 +2,8 @@ import time
 import serial
 import cv2
 import tkinter as tk
+import sys
+import os
 from PIL import Image, ImageTk
 
 # =========================
@@ -16,6 +18,7 @@ time.sleep(2)  # allow serial to stabilise
 # =========================
 #   TKINTER FULLSCREEN SETUP
 # =========================
+
 root = tk.Tk()
 root.attributes('-fullscreen', True)
 root.bind('<Escape>', lambda e: root.destroy())
@@ -27,7 +30,7 @@ screen_height = root.winfo_screenheight()
 # =========================
 #   LOAD BACKGROUND IMAGE
 # =========================
-image = cv2.imread('imageJ.jpg')
+image = cv2.imread('/home/pi/weightOnPlanets/imageJ.jpg')
 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 h, w = image.shape[:2]
