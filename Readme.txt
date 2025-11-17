@@ -42,3 +42,35 @@ journalctl -u weightdisplay.service -f
 Note: to get rid of the password warining -  sudo rm /etc/profile.d/sshpwd.sh
 
 
+_______________________
+1. Check if the service is running
+Basic status:
+systemctl status weightdisplay.service
+
+
+You’ll see:
+
+active (running) → GOOD
+
+inactive / failed → something’s wrong
+
+Quick “is it running?”:
+systemctl is-active weightdisplay.service
+
+
+Output:
+
+active → running
+
+inactive / failed → not running
+
+✅ 2. Stop the service
+sudo systemctl stop weightdisplay.service
+
+✅ 3. Start the service
+sudo systemctl start weightdisplay.service
+
+✅ 4. Restart the service
+sudo systemctl restart weightdisplay.service
+
+
